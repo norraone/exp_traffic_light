@@ -2,14 +2,14 @@ module traffic_light(
 	input				sys_clk,
 	input				sys_rst_p,
 	input				sys_clk_1s,
-	output reg	[4:0]	light_t,
+	output reg	[3:0]	light_t,
 	output reg	[2:0]	light_ctrl
 	);
 /* PARAM */
 // Global Parameter
-parameter [2:0]   G_T = 5'd10,
-				  Y_T = 5'd5,
-				  R_T = 5'd15;
+parameter [2:0]   G_T = 4'd10,
+				  Y_T = 4'd5,
+				  R_T = 4'd15;
 // Local Parameter
 localparam [3:0]  IDLE = 4'b0001,
 				  G    = 4'b0010,
@@ -37,10 +37,10 @@ if (sys_rst_p) begin
 	nxt_st <= IDLE;
 end
 	case(cur_st)
-		IDLE	:nxt_st<=(light_t==5'd2)?G:IDLE;
-		G 		:nxt_st<=(light_t==5'd2)?Y:G;
-		Y 		:nxt_st<=(light_t==5'd2)?R:Y;
-		R  		:nxt_st<=(light_t==5'd2)?G:R;
+		IDLE	:nxt_st<=(light_t==4'd2)?G:IDLE;
+		G 		:nxt_st<=(light_t==4'd2)?Y:G;
+		Y 		:nxt_st<=(light_t==4'd2)?R:Y;
+		R  		:nxt_st<=(light_t==4'd2)?G:R;
 		default :nxt_st<=IDLE;
 	endcase
 end
@@ -53,26 +53,26 @@ end
     case(nxt_st)
         IDLE:begin
 	            light_ctrl <= 3'b000;
-	            if (light_t==5'd1) light_t<=G_T;
+	            if (light_t==4'd1) light_t<=G_T;
 	            else light_t<=light_t-1;
         	end
         G 	:begin
 	            light_ctrl <= 3'b001;
-	            if (light_t==5'd1) light_t<=G_T;
+	            if (light_t==4'd1) light_t<=G_T;
 	            else light_t<=light_t-1;
         	end
         Y 	:begin
 	            light_ctrl <= 3'b010;
-	            if (light_t==5'd1) light_t<=Y_T;
+	            if (light_t==4'd1) light_t<=Y_T;
 	            else light_t<=light_t-1;
         	end
         R 	:begin
 	            light_ctrl <= 3'b100;
-	            if (light_t==5'd1) light_t<=R_T;
+	            if (light_t==4'd1) light_t<=R_T;
 	            else light_t<=light_t-1;
         	end
         default:
-            light_ctrl <= 3'b000;
+            light_ctrl <= 3'b001;
     endcase
 end
 endmodule
