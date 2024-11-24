@@ -7,7 +7,8 @@ module top(
 	);
 
 wire sys_clk_1hz;
-wire [15:0] carry_light_t;
+wire [7:0] carry_light_t;
+wire [7:0] carry_hex_light_t;
 
 clk_div_1Hz #(.DIVISOR(26'd50000000)) inst_clk_div_1Hz (
 	.sys_clk(sys_clk), 
@@ -22,10 +23,15 @@ traffic_light_optimized inst_traffic_light_optimized
 		.light_t    (carry_light_t),
 		.light_ctrl (light_ctrl)
 	);
+decimal_to_hex inst_decimal_to_hex (
+	.decimal_in(carry_light_t), 
+	.hex_out(carry_hex_light_t)
+	);
+
 display_4 #(.CNT_MAX(49999)) inst_display_4 (
 	.clk(sys_clk), 
 	.rst(sys_rst_p), 
-	.data(carry_light_t), 
+	.data(carry_hex_light_t), 
 	.sel(sel), 
 	.seg(seg));
 

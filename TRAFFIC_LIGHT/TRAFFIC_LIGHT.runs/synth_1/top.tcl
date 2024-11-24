@@ -73,7 +73,7 @@ OPTRACE "synth_1" START { ROLLUP_AUTO }
 set_param checkpoint.writeSynthRtdsInDcp 1
 set_param general.maxThreads 32
 set_param chipscope.maxJobs 4
-set_param synth.incrementalSynthesisCache C:/Users/Seler/AppData/Roaming/Xilinx/Vivado/.Xil/Vivado-35424-norra1-mechrevo/incrSyn
+set_param synth.incrementalSynthesisCache C:/Users/Seler/AppData/Roaming/Xilinx/Vivado/.Xil/Vivado-25624-norra1-mechrevo/incrSyn
 set_param xicom.use_bs_reader 1
 set_msg_config -id {Synth 8-256} -limit 10000
 set_msg_config -id {Synth 8-638} -limit 10000
@@ -93,7 +93,9 @@ OPTRACE "Creating in-memory project" END { }
 OPTRACE "Adding files" START { }
 read_verilog -library xil_defaultlib {
   D:/FPGA/exp_traffic_light/src/clock_div.v
+  D:/FPGA/exp_traffic_light/src/dec2hex.v
   D:/FPGA/exp_traffic_light/src/display_4.v
+  D:/FPGA/exp_traffic_light/src/traffic_light.v
   D:/FPGA/exp_traffic_light/src/top.v
 }
 OPTRACE "Adding files" END { }

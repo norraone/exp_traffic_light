@@ -2,14 +2,14 @@ module traffic_light_optimized (
     input               sys_clk,
     input               sys_rst_p,
     input               sys_clk_1s,
-    output reg  [3:0]   light_t,    // Time counter output
+    output reg  [7:0]   light_t,    // Time counter output
     output reg  [2:0]   light_ctrl  // Traffic light control (RGB)
 );
 
 // Timing parameters (in seconds)
-localparam [3:0] GREEN_TIME  = 4'd10,
-                 YELLOW_TIME = 4'd5,
-                 RED_TIME    = 4'd15;
+localparam [7:0] GREEN_TIME  = 8'd20,
+                 YELLOW_TIME = 8'd17,
+                 RED_TIME    = 8'd14;
 
 // State encoding using one-hot encoding
 localparam [3:0] IDLE   = 4'b0001,
