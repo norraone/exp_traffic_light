@@ -1,78 +1,73 @@
-module traffic_light(
-	input				sys_clk,
-	input				sys_rst_p,
-	input				sys_clk_1s,
-	output reg	[3:0]	light_t,
-	output reg	[2:0]	light_ctrl
-	);
-/* PARAM */
-// Global Parameter
-parameter [3:0]   G_T  = 4'd10,
-				  Y_T  = 4'd5,
-				  R_T  = 4'd15;
-// Local Parameter
-localparam [3:0]  IDLE = 4'b0001,
-				  G    = 4'b0010,
-				  Y    = 4'b0100,
-				  R    = 4'b1000;
+module traffic_light_optimized (
+    input               sys_clk,
+    input               sys_rst_p,
+    input               sys_clk_1s,
+    output reg  [3:0]   light_t,    // Time counter output
+    output reg  [2:0]   light_ctrl  // Traffic light control (RGB)
+);
 
-/* local var */
-reg [3:0] cur_st;
-reg [3:0] nxt_st;
+// Timing parameters (in seconds)
+localparam [3:0] GREEN_TIME  = 4'd10,
+                 YELLOW_TIME = 4'd5,
+                 RED_TIME    = 4'd15;
 
-/* State Machine Part */
-// First Machine: State Register
+// State encoding using one-hot encoding
+localparam [3:0] IDLE   = 4'b0001,
+                 GREEN  = 4'b0010,
+                 YELLOW = 4'b0100,
+                 RED    = 4'b1000;
+
+// State registers
+reg [3:0] current_state, next_state;
+
+// First block: Sequential state register
 always @(posedge sys_clk or posedge sys_rst_p) begin
-	if (sys_rst_p) begin
-		// reset
-		cur_st <= IDLE;
-	end
-	else begin
-		cur_st <= nxt_st;
-	end
+    if (sys_rst_p)
+        current_state <= IDLE;
+    else
+        current_state <= next_state;
 end
-// Second Machine: State Transfer
-always @(posedge sys_clk_1s or posedge sys_rst_p) begin
-if (sys_rst_p) begin
-	nxt_st <= IDLE;
-end
-	case(cur_st)
-		IDLE	:nxt_st<=(light_t==4'd2)?G:IDLE;
-		G 		:nxt_st<=(light_t==4'd2)?Y:G;
-		Y 		:nxt_st<=(light_t==4'd2)?R:Y;
-		R  		:nxt_st<=(light_t==4'd2)?G:R;
-		default :nxt_st<=IDLE;
-	endcase
-end
-// Third Machine: Output Control for next state
-always @(posedge sys_clk_1s or posedge sys_rst_p) begin
-if (sys_rst_p) begin
-	light_ctrl <= 3'b001;
-	light_t    <= G_T;
-end
-    case(nxt_st)
-        IDLE:begin
-	            light_ctrl <= 3'b000;
-	            if (light_t==4'd1) light_t<=G_T;
-	            else light_t<=light_t-1;
-        	end
-        G 	:begin
-	            light_ctrl <= 3'b001;
-	            if (light_t==4'd1) light_t<=G_T;
-	            else light_t<=light_t-1;
-        	end
-        Y 	:begin
-	            light_ctrl <= 3'b010;
-	            if (light_t==4'd1) light_t<=Y_T;
-	            else light_t<=light_t-1;
-        	end
-        R 	:begin
-	            light_ctrl <= 3'b100;
-	            if (light_t==4'd1) light_t<=R_T;
-	            else light_t<=light_t-1;
-        	end
-        default:
-            light_ctrl <= 3'b001;
+
+// Second block: Next state logic
+always @(*) begin
+    case (current_state)
+        IDLE:   next_state = (light_t == 4'd2) ? GREEN  : IDLE;
+        GREEN:  next_state = (light_t == 4'd2) ? YELLOW : GREEN;
+        YELLOW: next_state = (light_t == 4'd2) ? RED    : YELLOW;
+        RED:    next_state = (light_t == 4'd2) ? GREEN  : RED;
+        default:next_state = IDLE;
     endcase
 end
+
+// Third block: Output logic and timing control
+always @(posedge sys_clk_1s or posedge sys_rst_p) begin
+    if (sys_rst_p) begin
+        light_ctrl <= 3'b001;  // Default to green
+        light_t    <= GREEN_TIME;
+    end else begin
+        case (current_state)
+            IDLE: begin
+                light_ctrl <= 3'b000;
+                light_t    <= (light_t == 4'd1) ? GREEN_TIME  : light_t - 1'd1;
+            end
+            GREEN: begin
+                light_ctrl <= 3'b001;  // Green light
+                light_t    <= (light_t == 4'd1) ? GREEN_TIME  : light_t - 1'd1;
+            end
+            YELLOW: begin
+                light_ctrl <= 3'b010;  // Yellow light
+                light_t    <= (light_t == 4'd1) ? YELLOW_TIME : light_t - 1'd1;
+            end
+            RED: begin
+                light_ctrl <= 3'b100;  // Red light
+                light_t    <= (light_t == 4'd1) ? RED_TIME    : light_t - 1'd1;
+            end
+            default: begin
+                light_ctrl <= 3'b001;  // Default to green
+                light_t    <= GREEN_TIME;
+            end
+        endcase
+    end
+end
+
 endmodule
