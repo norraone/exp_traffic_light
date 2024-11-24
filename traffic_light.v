@@ -12,7 +12,7 @@ localparam [7:0] GREEN_TIME  = 8'd20,
                  RED_TIME    = 8'd14;
 
 // State encoding using one-hot encoding
-localparam [3:0] IDLE   = 4'b0001,
+localparam [3:0]
                  GREEN  = 4'b0010,
                  YELLOW = 4'b0100,
                  RED    = 4'b1000;
@@ -23,7 +23,7 @@ reg [3:0] current_state, next_state;
 // First block: Sequential state register
 always @(posedge sys_clk or posedge sys_rst_p) begin
     if (sys_rst_p)
-        current_state <= IDLE;
+        current_state <= GREEN;
     else
         current_state <= next_state;
 end
@@ -31,11 +31,10 @@ end
 // Second block: Next state logic
 always @(*) begin
     case (current_state)
-        IDLE:   next_state = (light_t == 4'd2) ? GREEN  : IDLE;
         GREEN:  next_state = (light_t == 4'd2) ? YELLOW : GREEN;
         YELLOW: next_state = (light_t == 4'd2) ? RED    : YELLOW;
         RED:    next_state = (light_t == 4'd2) ? GREEN  : RED;
-        default:next_state = IDLE;
+        default:next_state = GREEN;
     endcase
 end
 
@@ -46,10 +45,6 @@ always @(posedge sys_clk_1s or posedge sys_rst_p) begin
         light_t    <= GREEN_TIME;
     end else begin
         case (current_state)
-            IDLE: begin
-                light_ctrl <= 3'b000;
-                light_t    <= (light_t == 4'd1) ? GREEN_TIME  : light_t - 1'd1;
-            end
             GREEN: begin
                 light_ctrl <= 3'b001;  // Green light
                 light_t    <= (light_t == 4'd1) ? GREEN_TIME  : light_t - 1'd1;
