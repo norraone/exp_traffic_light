@@ -14,7 +14,7 @@ clk_div_1Hz #(.DIVISOR(26'd50000000)) inst_clk_div_1Hz (
 	.sys_rst_p(sys_rst_p), 
 	.clk_1hz(sys_clk_1hz)
 	);
-traffic_light inst_traffic_light_optimized
+traffic_light_optimized inst_traffic_light_optimized
 	(
 		.sys_clk    (sys_clk),
 		.sys_rst_p  (sys_rst_p),
