@@ -48,7 +48,7 @@ always @(posedge sys_clk_1s or posedge sys_rst_p) begin
         case (current_state)
             IDLE: begin
                 light_ctrl <= 3'b000;
-                light_t    <= (light_t == 4'h1) ? GREEN_TIME  : light_t - 1'd1;
+                light_t    <= (light_t == 4'd1) ? GREEN_TIME  : light_t - 1'd1;
             end
             GREEN: begin
                 light_ctrl <= 3'b001;  // Green light
