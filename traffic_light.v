@@ -7,9 +7,9 @@ module traffic_light(
 	);
 /* PARAM */
 // Global Parameter
-parameter [2:0]   G_T = 4'd10,
-				  Y_T = 4'd5,
-				  R_T = 4'd15;
+parameter [3:0]   G_T  = 4'd10,
+				  Y_T  = 4'd5,
+				  R_T  = 4'd15;
 // Local Parameter
 localparam [3:0]  IDLE = 4'b0001,
 				  G    = 4'b0010,
